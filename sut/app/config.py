@@ -1,9 +1,15 @@
 """Application configuration via pydantic-settings."""
 
+import pathlib
 from functools import lru_cache
 from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Resolve project root (enterprise-pytest/) regardless of OS or working directory
+_PROJECT_ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
+_DEFAULT_DB_PATH = _PROJECT_ROOT / "sut" / "data" / "orders.db"
+_DEFAULT_DB_URL = f"sqlite+aiosqlite:///{_DEFAULT_DB_PATH.as_posix()}"
 
 
 class Settings(BaseSettings):
@@ -20,7 +26,7 @@ class Settings(BaseSettings):
     environment: Literal["development", "staging", "production"] = "development"
 
     # Database
-    database_url: str = "sqlite+aiosqlite:///./sut/data/orders.db"
+    database_url: str = _DEFAULT_DB_URL
     database_echo: bool = False
 
     # Auth / JWT
