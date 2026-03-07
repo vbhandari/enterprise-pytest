@@ -29,7 +29,17 @@ enterprise-pytest/
 │       ├── routers/              # API + admin UI routes
 │       ├── templates/            # Jinja2 admin templates
 │       └── static/               # CSS assets
-├── tests/                        # Test framework (coming soon)
+├── tests/                        # Test framework
+│   ├── conftest.py               # Root: plugin registration, framework fixtures
+│   ├── config.py                 # Environment-aware test settings (pydantic-settings)
+│   ├── plugins/
+│   │   └── pytest_enterprise.py  # Custom plugin: markers, test_meta, hooks
+│   ├── utils/                    # Assertion helpers, waiters, http helpers
+│   ├── functional/               # Feature tests
+│   ├── regression/               # Edge-case & bug-fix tests
+│   ├── performance/              # Benchmarks & Locust load tests
+│   ├── messaging/                # Event broker tests
+│   └── ui/                       # Playwright browser tests
 ├── pyproject.toml                # Dependencies & tool config
 └── README.md
 ```
@@ -91,6 +101,42 @@ uvicorn sut.app.main:app --reload
 - **API docs:** http://localhost:8000/docs
 - **Admin UI:** http://localhost:8000/admin/login
 - **Health check:** http://localhost:8000/health
+
+## Test Framework
+
+### Enterprise Plugin (`tests/plugins/pytest_enterprise.py`)
+
+- **Custom markers** — `@pytest.mark.functional`, `regression`, `performance`, `messaging`, `ui`, `slow`
+- **`@test_meta` decorator** — attach traceability metadata (ticket ID, severity, component) to any test
+- **Enriched failure reports** — captures HTTP request/response pairs and attaches them to failed test output
+- **Custom terminal summary** — results broken down by component at the end of each run
+- **CLI options** — `--test-env local|staging|ci` and `--capture-responses`
+
+### Test Configuration (`tests/config.py`)
+
+Environment-aware settings via `pydantic-settings` with `TEST_` prefix:
+
+```bash
+# Run against staging
+TEST_ENV=staging TEST_BASE_URL=https://staging.example.com pytest -m functional
+```
+
+### Running Tests
+
+```bash
+# All tests
+pytest
+
+# By marker
+pytest -m functional
+pytest -m "regression and not slow"
+
+# With environment
+pytest --test-env ci
+
+# Parallel execution
+pytest -n auto
+```
 
 ## Cross-Platform
 
