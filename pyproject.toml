@@ -1,0 +1,87 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.backends"
+
+[project]
+name = "enterprise-pytest"
+version = "0.1.0"
+description = "Enterprise-grade test architecture combining Pytest, Playwright, and Locust"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+dependencies = [
+    # --- SUT dependencies ---
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "sqlalchemy[asyncio]>=2.0.30",
+    "aiosqlite>=0.20.0",
+    "pydantic>=2.7.0",
+    "pydantic-settings>=2.3.0",
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
+    "jinja2>=3.1.4",
+    "python-multipart>=0.0.9",
+    "alembic>=1.13.0",
+]
+
+[project.optional-dependencies]
+test = [
+    # Core test framework
+    "pytest>=8.2.0",
+    "pytest-asyncio>=0.24.0",
+    "httpx>=0.27.0",
+    # Test data
+    "factory-boy>=3.3.0",
+    # Parallel execution
+    "pytest-xdist>=3.5.0",
+    # Reporting
+    "pytest-html>=4.1.0",
+    "allure-pytest>=2.13.0",
+    # Retry / stability
+    "pytest-rerunfailures>=14.0",
+    # Performance
+    "pytest-benchmark>=4.0.0",
+    "locust>=2.29.0",
+    # Logging
+    "structlog>=24.1.0",
+    # UI testing
+    "pytest-playwright>=0.5.0",
+    "playwright>=1.44.0",
+]
+dev = [
+    "ruff>=0.5.0",
+    "mypy>=1.10.0",
+    "pre-commit>=3.7.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+markers = [
+    "functional: Functional / feature tests",
+    "regression: Regression and edge-case tests",
+    "performance: Performance and benchmark tests",
+    "messaging: Event broker / messaging tests",
+    "ui: Playwright UI tests",
+    "slow: Tests that take a long time to run",
+]
+addopts = [
+    "--strict-markers",
+    "-v",
+    "--tb=short",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP", "B", "A", "SIM"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+plugins = ["pydantic.mypy"]
