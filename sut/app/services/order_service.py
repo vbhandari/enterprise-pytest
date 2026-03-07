@@ -235,7 +235,18 @@ async def apply_coupon(db: AsyncSession, order_id: int, coupon_code: str) -> Ord
         )
 
     now = datetime.now(UTC)
-    if now < coupon.valid_from or now > coupon.valid_to:
+    # Ensure both sides are tz-aware for comparison (SQLite stores naive)
+    valid_from = (
+        coupon.valid_from.replace(tzinfo=UTC)
+        if coupon.valid_from.tzinfo is None
+        else coupon.valid_from
+    )
+    valid_to = (
+        coupon.valid_to.replace(tzinfo=UTC)
+        if coupon.valid_to.tzinfo is None
+        else coupon.valid_to
+    )
+    if now < valid_from or now > valid_to:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Coupon is not within its validity period",
