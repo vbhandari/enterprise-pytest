@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin{% endblock %} | Order Management</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    {% block navbar %}
+    <nav class="navbar">
+        <div class="container">
+            <a href="/admin/dashboard" class="navbar-brand">Order Management Admin</a>
+            <ul class="navbar-nav">
+                <li><a href="/admin/dashboard">Dashboard</a></li>
+                <li><a href="/admin/logout" id="logout-link">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+    {% endblock %}
+
+    <main class="container content-area">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

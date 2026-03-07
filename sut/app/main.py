@@ -1,13 +1,24 @@
 """FastAPI application factory."""
 
+import pathlib
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 from sut.app.config import get_settings
 from sut.app.database import Base, engine
-from sut.app.routers import auth_router, coupons_router, orders_router, products_router
+from sut.app.routers import (
+    admin_router,
+    auth_router,
+    coupons_router,
+    orders_router,
+    products_router,
+)
+
+_APP_DIR = pathlib.Path(__file__).resolve().parent
+_STATIC_DIR = _APP_DIR / "static"
 
 
 @asynccontextmanager
@@ -29,13 +40,15 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
+    # Static files
+    app.mount("/static", StaticFiles(directory=str(_STATIC_DIR)), name="static")
+
     # Register API routers
     app.include_router(auth_router)
     app.include_router(products_router)
     app.include_router(orders_router)
     app.include_router(coupons_router)
-
-    # Admin UI router will be added in Step 4
+    app.include_router(admin_router)
 
     @app.get("/health")
     async def health_check() -> dict[str, str]:
