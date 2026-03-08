@@ -28,18 +28,14 @@ class TestDashboard:
     """Admin dashboard UI tests — React SPA."""
 
     @test_meta(ticket="UI-010", severity="normal", component="admin_ui")
-    async def test_unauthenticated_sees_login(
-        self, live_server: str, page: Page
-    ) -> None:
+    async def test_unauthenticated_sees_login(self, live_server: str, page: Page) -> None:
         """Without a token, the SPA should show the login form."""
         await page.goto(f"{live_server}/admin/dashboard")
         await page.wait_for_selector("[data-testid=email-input]", timeout=5000)
         assert await page.locator("[data-testid=email-input]").is_visible()
 
     @test_meta(ticket="UI-011", severity="normal", component="admin_ui")
-    async def test_authenticated_sees_dashboard(
-        self, live_server: str, page: Page
-    ) -> None:
+    async def test_authenticated_sees_dashboard(self, live_server: str, page: Page) -> None:
         """With a token, the SPA should render the dashboard heading."""
         await _inject_auth_token(page, live_server)
         heading = page.locator("[data-testid=dashboard-heading]")
@@ -47,9 +43,7 @@ class TestDashboard:
         assert "Dashboard" in (await heading.text_content() or "")
 
     @test_meta(ticket="UI-012", severity="normal", component="admin_ui")
-    async def test_sidebar_navigation_links(
-        self, live_server: str, page: Page
-    ) -> None:
+    async def test_sidebar_navigation_links(self, live_server: str, page: Page) -> None:
         """Sidebar should contain navigation links for all sections."""
         await _inject_auth_token(page, live_server)
         sidebar = page.locator("aside")
@@ -60,9 +54,7 @@ class TestDashboard:
             assert await link.is_visible(), f"Sidebar link '{label}' not visible"
 
     @test_meta(ticket="UI-013", severity="normal", component="admin_ui")
-    async def test_logout_clears_token(
-        self, live_server: str, page: Page
-    ) -> None:
+    async def test_logout_clears_token(self, live_server: str, page: Page) -> None:
         """Clicking sign out should clear the token and show login."""
         await _inject_auth_token(page, live_server)
         await page.click("[data-testid=logout-btn]")
@@ -74,9 +66,7 @@ class TestDashboard:
         assert token is None
 
     @test_meta(ticket="UI-014", severity="normal", component="admin_ui")
-    async def test_navigate_to_orders_page(
-        self, live_server: str, page: Page
-    ) -> None:
+    async def test_navigate_to_orders_page(self, live_server: str, page: Page) -> None:
         """Clicking Orders in sidebar should navigate to the orders page."""
         await _inject_auth_token(page, live_server)
         await page.click("aside >> text=Orders")
@@ -84,9 +74,7 @@ class TestDashboard:
         assert "/orders" in page.url
 
     @test_meta(ticket="UI-015", severity="normal", component="admin_ui")
-    async def test_navigate_to_products_page(
-        self, live_server: str, page: Page
-    ) -> None:
+    async def test_navigate_to_products_page(self, live_server: str, page: Page) -> None:
         """Clicking Products in sidebar should navigate to the products page."""
         await _inject_auth_token(page, live_server)
         await page.click("aside >> text=Products")

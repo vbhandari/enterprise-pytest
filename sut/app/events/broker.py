@@ -38,6 +38,7 @@ class Event:
     def __post_init__(self) -> None:
         if not self.event_id:
             import uuid
+
             object.__setattr__(self, "event_id", str(uuid.uuid4()))
 
 

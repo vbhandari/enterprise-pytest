@@ -61,13 +61,9 @@ class ProductFactory(factory.Factory):
     price = factory.LazyAttribute(
         lambda _: round(fake.pyfloat(min_value=1.0, max_value=999.99, right_digits=2), 2)
     )
-    stock_quantity = factory.LazyAttribute(
-        lambda _: fake.random_int(min=1, max=500)
-    )
+    stock_quantity = factory.LazyAttribute(lambda _: fake.random_int(min=1, max=500))
     category = factory.LazyAttribute(
-        lambda _: fake.random_element(
-            ["electronics", "clothing", "books", "home", "sports"]
-        )
+        lambda _: fake.random_element(["electronics", "clothing", "books", "home", "sports"])
     )
 
 
@@ -85,9 +81,7 @@ class CouponFactory(factory.Factory):
         lambda _: round(fake.pyfloat(min_value=5.0, max_value=50.0, right_digits=2), 2)
     )
     valid_from = factory.LazyFunction(lambda: datetime.now(tz=UTC).isoformat())
-    valid_to = factory.LazyFunction(
-        lambda: (datetime.now(tz=UTC) + timedelta(days=30)).isoformat()
-    )
+    valid_to = factory.LazyFunction(lambda: (datetime.now(tz=UTC) + timedelta(days=30)).isoformat())
     max_uses = 100
 
 

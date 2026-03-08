@@ -201,9 +201,7 @@ class EnterprisePlugin:
     # -- Collection phase ---------------------------------------------------
 
     @pytest.hookimpl(tryfirst=True)
-    def pytest_collection_modifyitems(
-        self, config: Config, items: list[Item]
-    ) -> None:
+    def pytest_collection_modifyitems(self, config: Config, items: list[Item]) -> None:
         """Log collection summary and validate test_meta markers."""
         marker_counts: dict[str, int] = {m: 0 for m in MARKERS}
 
@@ -241,9 +239,7 @@ class EnterprisePlugin:
         self._test_timings[item.nodeid] = time.monotonic()
 
     @pytest.hookimpl(tryfirst=True)
-    def pytest_runtest_makereport(
-        self, item: Item, call: pytest.CallInfo[None]
-    ) -> None:
+    def pytest_runtest_makereport(self, item: Item, call: pytest.CallInfo[None]) -> None:
         """Enrich failure reports with metadata and captured exchanges."""
         # We only process the "call" phase (not setup/teardown)
         if call.when != "call":

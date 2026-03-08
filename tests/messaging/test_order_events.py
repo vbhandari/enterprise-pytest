@@ -43,9 +43,7 @@ class TestOrderCreatedEvent:
         assert_event_published(EventType.INVENTORY_DECREMENTED)
 
     @test_meta(ticket="MSG-003", severity="normal", component="events")
-    async def test_no_event_on_failed_order(
-        self, customer_client: httpx.AsyncClient
-    ) -> None:
+    async def test_no_event_on_failed_order(self, customer_client: httpx.AsyncClient) -> None:
         """Failed order creation should not publish events."""
         event_broker.clear_history()
         await customer_client.post(
@@ -101,9 +99,7 @@ class TestOrderStatusEvents:
         event_broker.clear_history()
 
         # created -> delivered is invalid
-        await admin_client.patch(
-            f"/orders/{order['id']}/status", json={"status": "delivered"}
-        )
+        await admin_client.patch(f"/orders/{order['id']}/status", json={"status": "delivered"})
         assert_no_event_published(EventType.ORDER_DELIVERED)
 
 

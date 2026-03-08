@@ -14,6 +14,7 @@ from sut.app.config import get_settings
 
 class Base(DeclarativeBase):
     """Base class for all SQLAlchemy ORM models."""
+
     pass
 
 

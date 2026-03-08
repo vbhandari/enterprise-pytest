@@ -35,9 +35,7 @@ class TestCouponCRUD:
         assert len(resp.json()) >= 1
 
     @test_meta(ticket="CPN-003", severity="normal", component="coupons")
-    async def test_customer_cannot_create_coupon(
-        self, customer_client: httpx.AsyncClient
-    ) -> None:
+    async def test_customer_cannot_create_coupon(self, customer_client: httpx.AsyncClient) -> None:
         resp = await customer_client.post(
             "/coupons",
             json={

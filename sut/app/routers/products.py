@@ -20,9 +20,7 @@ async def list_products(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
 ) -> list[ProductResponse]:
-    products = await product_service.list_products(
-        db, category=category, skip=skip, limit=limit
-    )
+    products = await product_service.list_products(db, category=category, skip=skip, limit=limit)
     return [ProductResponse.model_validate(p) for p in products]
 
 

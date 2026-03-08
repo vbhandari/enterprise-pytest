@@ -19,9 +19,7 @@ class TestClientFixtures:
         data = resp.json()
         assert data["status"] == "healthy"
 
-    async def test_admin_client_is_authenticated(
-        self, admin_client: httpx.AsyncClient
-    ) -> None:
+    async def test_admin_client_is_authenticated(self, admin_client: httpx.AsyncClient) -> None:
         # Admin can create a product (requires auth)
         product = ProductFactory()
         resp = await admin_client.post("/products", json=product)
@@ -34,9 +32,7 @@ class TestClientFixtures:
         resp = await customer_client.get("/orders")
         assert resp.status_code == 200
 
-    async def test_unauthenticated_client_is_rejected(
-        self, client: httpx.AsyncClient
-    ) -> None:
+    async def test_unauthenticated_client_is_rejected(self, client: httpx.AsyncClient) -> None:
         resp = await client.get("/orders")
         assert resp.status_code == 401
 

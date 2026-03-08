@@ -22,8 +22,7 @@ def assert_status(response: Any, expected: int, *, msg: str = "") -> None:
     actual = response.status_code
     detail = f" — {msg}" if msg else ""
     assert actual == expected, (
-        f"Expected status {expected}, got {actual}{detail}.\n"
-        f"Response body: {response.text[:500]}"
+        f"Expected status {expected}, got {actual}{detail}.\nResponse body: {response.text[:500]}"
     )
 
 
@@ -88,8 +87,7 @@ def assert_order_total_calculation(
 
     expected_tax = round(subtotal * tax_rate, 2)
     assert abs(tax - expected_tax) <= tolerance, (
-        f"Tax mismatch: subtotal={subtotal} * rate={tax_rate} = {expected_tax}, "
-        f"but got tax={tax}"
+        f"Tax mismatch: subtotal={subtotal} * rate={tax_rate} = {expected_tax}, but got tax={tax}"
     )
 
 
@@ -127,8 +125,7 @@ def assert_no_event_published(event_type: EventType | str) -> None:
     et = EventType(event_type) if isinstance(event_type, str) else event_type
     events = event_broker.get_events_by_type(et)
     assert len(events) == 0, (
-        f"Expected no '{et}' events, but found {len(events)}: "
-        f"{[e.payload for e in events]}"
+        f"Expected no '{et}' events, but found {len(events)}: {[e.payload for e in events]}"
     )
 
 
@@ -136,6 +133,4 @@ def assert_event_count(event_type: EventType | str, expected: int) -> None:
     """Assert the exact number of events of a given type."""
     et = EventType(event_type) if isinstance(event_type, str) else event_type
     events = event_broker.get_events_by_type(et)
-    assert len(events) == expected, (
-        f"Expected {expected} '{et}' events, got {len(events)}"
-    )
+    assert len(events) == expected, f"Expected {expected} '{et}' events, got {len(events)}"

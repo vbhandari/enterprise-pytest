@@ -55,8 +55,7 @@ async def poll_until(
         await asyncio.sleep(interval)
 
     raise TimeoutError(
-        f"Timed out after {timeout}s waiting for {description}. "
-        f"Last result: {last_result}"
+        f"Timed out after {timeout}s waiting for {description}. Last result: {last_result}"
     )
 
 

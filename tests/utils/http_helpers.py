@@ -101,10 +101,7 @@ async def create_order(
         customer_client: Authenticated customer httpx client.
         product_ids_quantities: List of (product_id, quantity) tuples.
     """
-    items = [
-        {"product_id": pid, "quantity": qty}
-        for pid, qty in product_ids_quantities
-    ]
+    items = [{"product_id": pid, "quantity": qty} for pid, qty in product_ids_quantities]
     resp = await customer_client.post("/orders", json={"items": items})
     resp.raise_for_status()
     return resp.json()

@@ -67,6 +67,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: uv pip install -e ".[test]" --system
+      - run: mkdir -p reports
       - name: Run benchmarks
         run: >-
           pytest tests/performance/test_benchmarks.py

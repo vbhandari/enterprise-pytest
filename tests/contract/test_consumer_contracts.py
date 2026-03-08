@@ -39,19 +39,21 @@ class TestProductContracts:
             .with_request("GET", "/products")
             .will_respond_with(200)
             .with_body(
-                json.dumps([
-                    {
-                        "id": 1,
-                        "name": "Test Widget",
-                        "description": "A test product",
-                        "price": 29.99,
-                        "stock_quantity": 100,
-                        "category": "electronics",
-                        "is_active": True,
-                        "created_at": "2025-01-01T00:00:00",
-                        "updated_at": "2025-01-01T00:00:00",
-                    }
-                ]),
+                json.dumps(
+                    [
+                        {
+                            "id": 1,
+                            "name": "Test Widget",
+                            "description": "A test product",
+                            "price": 29.99,
+                            "stock_quantity": 100,
+                            "category": "electronics",
+                            "is_active": True,
+                            "created_at": "2025-01-01T00:00:00",
+                            "updated_at": "2025-01-01T00:00:00",
+                        }
+                    ]
+                ),
                 content_type="application/json",
             )
         )
@@ -77,17 +79,19 @@ class TestProductContracts:
             .with_request("GET", "/products/1")
             .will_respond_with(200)
             .with_body(
-                json.dumps({
-                    "id": 1,
-                    "name": "Premium Gadget",
-                    "description": "High-end gadget",
-                    "price": 149.99,
-                    "stock_quantity": 25,
-                    "category": "electronics",
-                    "is_active": True,
-                    "created_at": "2025-01-01T00:00:00",
-                    "updated_at": "2025-01-01T00:00:00",
-                }),
+                json.dumps(
+                    {
+                        "id": 1,
+                        "name": "Premium Gadget",
+                        "description": "High-end gadget",
+                        "price": 149.99,
+                        "stock_quantity": 25,
+                        "category": "electronics",
+                        "is_active": True,
+                        "created_at": "2025-01-01T00:00:00",
+                        "updated_at": "2025-01-01T00:00:00",
+                    }
+                ),
                 content_type="application/json",
             )
         )
@@ -131,17 +135,21 @@ class TestAuthContracts:
             pact.upon_receiving("a successful login request")
             .with_request("POST", "/auth/login")
             .with_body(
-                json.dumps({
-                    "email": "user@test.com",
-                    "password": "TestPass123!",
-                }),
+                json.dumps(
+                    {
+                        "email": "user@test.com",
+                        "password": "TestPass123!",
+                    }
+                ),
                 content_type="application/json",
             )
             .will_respond_with(200)
             .with_body(
-                json.dumps({
-                    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock",
-                }),
+                json.dumps(
+                    {
+                        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock",
+                    }
+                ),
                 content_type="application/json",
             )
         )
@@ -165,10 +173,12 @@ class TestAuthContracts:
             pact.upon_receiving("a login request with invalid credentials")
             .with_request("POST", "/auth/login")
             .with_body(
-                json.dumps({
-                    "email": "wrong@test.com",
-                    "password": "BadPass!",
-                }),
+                json.dumps(
+                    {
+                        "email": "wrong@test.com",
+                        "password": "BadPass!",
+                    }
+                ),
                 content_type="application/json",
             )
             .will_respond_with(401)
@@ -200,15 +210,17 @@ class TestOrderContracts:
             .with_header("Authorization", "Bearer valid-token")
             .will_respond_with(200)
             .with_body(
-                json.dumps([
-                    {
-                        "id": 1,
-                        "customer_id": 1,
-                        "status": "created",
-                        "total": 54.00,
-                        "created_at": "2025-01-01T00:00:00",
-                    }
-                ]),
+                json.dumps(
+                    [
+                        {
+                            "id": 1,
+                            "customer_id": 1,
+                            "status": "created",
+                            "total": 54.00,
+                            "created_at": "2025-01-01T00:00:00",
+                        }
+                    ]
+                ),
                 content_type="application/json",
             )
         )

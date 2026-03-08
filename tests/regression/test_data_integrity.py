@@ -15,9 +15,7 @@ class TestDataIntegrity:
     """Boundary values and data integrity edge cases."""
 
     @test_meta(ticket="REG-020", severity="normal", component="products")
-    async def test_unicode_product_name(
-        self, admin_client: httpx.AsyncClient
-    ) -> None:
+    async def test_unicode_product_name(self, admin_client: httpx.AsyncClient) -> None:
         """Unicode characters in product names must be handled correctly."""
         resp = await admin_client.post(
             "/products",
@@ -32,9 +30,7 @@ class TestDataIntegrity:
         assert "Ñoño" in resp.json()["name"]
 
     @test_meta(ticket="REG-021", severity="normal", component="products")
-    async def test_very_long_product_name(
-        self, admin_client: httpx.AsyncClient
-    ) -> None:
+    async def test_very_long_product_name(self, admin_client: httpx.AsyncClient) -> None:
         """Product name at maximum length boundary."""
         long_name = "A" * 200
         resp = await admin_client.post(
@@ -50,9 +46,7 @@ class TestDataIntegrity:
         assert resp.json()["name"] == long_name
 
     @test_meta(ticket="REG-022", severity="normal", component="products")
-    async def test_product_name_exceeds_max_length(
-        self, admin_client: httpx.AsyncClient
-    ) -> None:
+    async def test_product_name_exceeds_max_length(self, admin_client: httpx.AsyncClient) -> None:
         """Product name exceeding maximum length should be rejected."""
         too_long = "A" * 201
         resp = await admin_client.post(
@@ -67,9 +61,7 @@ class TestDataIntegrity:
         assert_status(resp, 422)
 
     @test_meta(ticket="REG-023", severity="normal", component="products")
-    async def test_zero_price_product(
-        self, admin_client: httpx.AsyncClient
-    ) -> None:
+    async def test_zero_price_product(self, admin_client: httpx.AsyncClient) -> None:
         """Zero-priced products (freebies) should be valid."""
         resp = await admin_client.post(
             "/products",
@@ -84,9 +76,7 @@ class TestDataIntegrity:
         assert resp.status_code in (201, 422)
 
     @test_meta(ticket="REG-024", severity="normal", component="auth")
-    async def test_unicode_in_customer_email(
-        self, client: httpx.AsyncClient
-    ) -> None:
+    async def test_unicode_in_customer_email(self, client: httpx.AsyncClient) -> None:
         """Emails with unicode local parts."""
         resp = await client.post(
             "/auth/register",

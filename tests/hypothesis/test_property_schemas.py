@@ -135,9 +135,7 @@ class TestOrderCreateProperties:
         from pydantic import ValidationError
 
         with pytest.raises(ValidationError):
-            OrderCreate(
-                items=[OrderItemCreate(product_id=1, quantity=quantity)]
-            )
+            OrderCreate(items=[OrderItemCreate(product_id=1, quantity=quantity)])
 
     def test_empty_items_rejected(self) -> None:
         """An order with no items should be rejected."""
@@ -156,9 +154,7 @@ class TestCustomerCreateProperties:
         password=st.text(min_size=8, max_size=128).filter(lambda s: s.strip()),
     )
     @settings(max_examples=50)
-    def test_valid_customers_parse(
-        self, name: str, email: str, password: str
-    ) -> None:
+    def test_valid_customers_parse(self, name: str, email: str, password: str) -> None:
         """Valid name/email/password combos should always validate."""
         customer = CustomerCreate(name=name, email=email, password=password)
         assert customer.name == name

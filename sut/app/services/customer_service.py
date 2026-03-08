@@ -33,9 +33,7 @@ async def register_customer(db: AsyncSession, data: CustomerCreate) -> Customer:
     return customer
 
 
-async def authenticate_customer(
-    db: AsyncSession, email: str, password: str
-) -> TokenResponse:
+async def authenticate_customer(db: AsyncSession, email: str, password: str) -> TokenResponse:
     """Authenticate a customer and return a JWT token."""
     result = await db.execute(
         select(Customer).where(Customer.email == email, Customer.is_active == True)  # noqa: E712

@@ -25,9 +25,7 @@ class TestLoginPage:
         assert "Admin Sign In" in (await page.content())
 
     @test_meta(ticket="UI-002", severity="critical", component="admin_ui")
-    async def test_login_invalid_credentials(
-        self, live_server: str, page: Page
-    ) -> None:
+    async def test_login_invalid_credentials(self, live_server: str, page: Page) -> None:
         """Invalid credentials show an error message without navigating away."""
         await page.goto(f"{live_server}/admin/login")
         await page.fill("[data-testid=email-input]", "wrong@example.com")
@@ -40,9 +38,7 @@ class TestLoginPage:
         assert "invalid" in error_text or "wrong" in error_text
 
     @test_meta(ticket="UI-003", severity="normal", component="admin_ui")
-    async def test_login_form_requires_fields(
-        self, live_server: str, page: Page
-    ) -> None:
+    async def test_login_form_requires_fields(self, live_server: str, page: Page) -> None:
         """Submitting with empty fields should not navigate to dashboard."""
         await page.goto(f"{live_server}/admin/login")
         await page.wait_for_selector("[data-testid=login-submit]", timeout=5000)

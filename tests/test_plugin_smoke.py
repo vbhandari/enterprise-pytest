@@ -61,9 +61,7 @@ class TestExchangeStore:
 
     def test_format_for_report(self) -> None:
         store = ExchangeStore()
-        store.record(
-            CapturedExchange(method="GET", url="/products", status_code=200)
-        )
+        store.record(CapturedExchange(method="GET", url="/products", status_code=200))
         report = store.format_for_report()
         assert "GET /products" in report
         assert "Status: 200" in report

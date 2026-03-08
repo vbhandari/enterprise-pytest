@@ -44,9 +44,7 @@ class TestProductCRUD:
         assert len(data) >= 3
 
     @test_meta(ticket="PROD-003", severity="normal", component="products")
-    async def test_get_product_by_id(
-        self, client: httpx.AsyncClient, sample_product: dict
-    ) -> None:
+    async def test_get_product_by_id(self, client: httpx.AsyncClient, sample_product: dict) -> None:
         resp = await client.get(f"/products/{sample_product['id']}")
         assert_status(resp, 200)
         assert resp.json()["id"] == sample_product["id"]
@@ -84,9 +82,7 @@ class TestProductAuthorization:
     """Verify role-based access for product endpoints."""
 
     @test_meta(ticket="PROD-010", severity="critical", component="products")
-    async def test_customer_cannot_create_product(
-        self, customer_client: httpx.AsyncClient
-    ) -> None:
+    async def test_customer_cannot_create_product(self, customer_client: httpx.AsyncClient) -> None:
         resp = await customer_client.post(
             "/products",
             json={"name": "Hack", "price": 1.0, "stock_quantity": 1, "category": "x"},
@@ -94,16 +90,12 @@ class TestProductAuthorization:
         assert_status(resp, 403)
 
     @test_meta(ticket="PROD-011", severity="normal", component="products")
-    async def test_unauthenticated_can_list_products(
-        self, client: httpx.AsyncClient
-    ) -> None:
+    async def test_unauthenticated_can_list_products(self, client: httpx.AsyncClient) -> None:
         resp = await client.get("/products")
         assert_status(resp, 200)
 
     @test_meta(ticket="PROD-012", severity="normal", component="products")
-    async def test_filter_by_category(
-        self, admin_client: httpx.AsyncClient
-    ) -> None:
+    async def test_filter_by_category(self, admin_client: httpx.AsyncClient) -> None:
         await create_product(admin_client, category="books", price=12.00)
         await create_product(admin_client, category="electronics", price=50.00)
         resp = await admin_client.get("/products", params={"category": "books"})

@@ -21,9 +21,7 @@ def calculate_tax(subtotal: float, discount: float = 0.0) -> float:
     return round(taxable * settings.tax_rate, 2)
 
 
-def calculate_order_totals(
-    subtotal: float, discount: float = 0.0
-) -> dict[str, float]:
+def calculate_order_totals(subtotal: float, discount: float = 0.0) -> dict[str, float]:
     """Return subtotal, discount_amount, tax_amount, and total."""
     tax = calculate_tax(subtotal, discount)
     total = round(subtotal - discount + tax, 2)
@@ -35,9 +33,7 @@ def calculate_order_totals(
     }
 
 
-async def create_order(
-    db: AsyncSession, customer_id: int, data: OrderCreate
-) -> Order:
+async def create_order(db: AsyncSession, customer_id: int, data: OrderCreate) -> Order:
     """
     Create a new order:
     1. Validate products exist and have sufficient stock
@@ -52,7 +48,8 @@ async def create_order(
     for item_data in data.items:
         result = await db.execute(
             select(Product).where(
-                Product.id == item_data.product_id, Product.is_active == True  # noqa: E712
+                Product.id == item_data.product_id,
+                Product.is_active == True,  # noqa: E712
             )
         )
         product = result.scalar_one_or_none()
@@ -138,9 +135,7 @@ async def list_orders(
     return list(result.scalars().all())
 
 
-async def update_order_status(
-    db: AsyncSession, order_id: int, new_status: OrderStatus
-) -> Order:
+async def update_order_status(db: AsyncSession, order_id: int, new_status: OrderStatus) -> Order:
     """
     Transition an order to a new status.
     Validates the transition via the state machine.
@@ -165,9 +160,7 @@ async def update_order_status(
     # Restore inventory on cancellation
     if new_status == OrderStatus.CANCELLED:
         for item in order.items:
-            result = await db.execute(
-                select(Product).where(Product.id == item.product_id)
-            )
+            result = await db.execute(select(Product).where(Product.id == item.product_id))
             product = result.scalar_one_or_none()
             if product:
                 product.stock_quantity += item.quantity
@@ -242,9 +235,7 @@ async def apply_coupon(db: AsyncSession, order_id: int, coupon_code: str) -> Ord
         else coupon.valid_from
     )
     valid_to = (
-        coupon.valid_to.replace(tzinfo=UTC)
-        if coupon.valid_to.tzinfo is None
-        else coupon.valid_to
+        coupon.valid_to.replace(tzinfo=UTC) if coupon.valid_to.tzinfo is None else coupon.valid_to
     )
     if now < valid_from or now > valid_to:
         raise HTTPException(

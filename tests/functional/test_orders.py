@@ -54,18 +54,14 @@ class TestOrderCreation:
         assert_status(resp, 409)
 
     @test_meta(ticket="ORD-004", severity="normal", component="orders")
-    async def test_order_invalid_product(
-        self, customer_client: httpx.AsyncClient
-    ) -> None:
+    async def test_order_invalid_product(self, customer_client: httpx.AsyncClient) -> None:
         resp = await customer_client.post(
             "/orders", json={"items": [{"product_id": 99999, "quantity": 1}]}
         )
         assert_status(resp, 404)
 
     @test_meta(ticket="ORD-005", severity="normal", component="orders")
-    async def test_order_empty_items(
-        self, customer_client: httpx.AsyncClient
-    ) -> None:
+    async def test_order_empty_items(self, customer_client: httpx.AsyncClient) -> None:
         resp = await customer_client.post("/orders", json={"items": []})
         assert_status(resp, 422)
 

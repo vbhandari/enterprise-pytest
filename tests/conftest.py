@@ -190,9 +190,7 @@ async def _login(
 
 
 @pytest.fixture()
-async def admin_client(
-    app, session_factory
-) -> AsyncGenerator[httpx.AsyncClient, None]:
+async def admin_client(app, session_factory) -> AsyncGenerator[httpx.AsyncClient, None]:
     """Authenticated httpx client with admin role."""
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app),
@@ -243,6 +241,4 @@ def _attach_exchange_report(
     """After each test, attach captured HTTP exchanges to the test report."""
     yield  # type: ignore[misc]
     if exchange_store.exchanges:
-        request.node.user_properties.append(
-            ("exchange_report", exchange_store.format_for_report())
-        )
+        request.node.user_properties.append(("exchange_report", exchange_store.format_for_report()))

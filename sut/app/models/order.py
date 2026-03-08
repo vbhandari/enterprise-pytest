@@ -64,20 +64,14 @@ class Order(Base):
     __tablename__ = "orders"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    customer_id: Mapped[int] = mapped_column(
-        ForeignKey("customers.id"), nullable=False, index=True
-    )
-    status: Mapped[str] = mapped_column(
-        String(20), nullable=False, default=OrderStatus.CREATED
-    )
+    customer_id: Mapped[int] = mapped_column(ForeignKey("customers.id"), nullable=False, index=True)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default=OrderStatus.CREATED)
     subtotal: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False, default=0)
     tax_amount: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False, default=0)
     discount_amount: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False, default=0)
     total: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False, default=0)
     discount_code: Mapped[str | None] = mapped_column(String(50), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )

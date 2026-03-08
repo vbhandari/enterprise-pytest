@@ -39,9 +39,7 @@ async def list_products(
     return list(result.scalars().all())
 
 
-async def update_product(
-    db: AsyncSession, product_id: int, data: ProductUpdate
-) -> Product | None:
+async def update_product(db: AsyncSession, product_id: int, data: ProductUpdate) -> Product | None:
     """Update an existing product."""
     product = await get_product(db, product_id)
     if product is None:
