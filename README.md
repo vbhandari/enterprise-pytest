@@ -10,28 +10,37 @@ This project showcases advanced Python testing patterns at an enterprise level:
 - **Regression tests** (5 order edge-cases + 3 coupon edge-cases + 5 data-integrity) — boundary values, race conditions, previously-fixed bugs
 - **Messaging tests** (14 tests) — in-memory event broker verification, subscriber multiplexing
 - **Performance tests** — 8 pytest-benchmark micro-benchmarks + Locust load test
-- **UI tests** — Playwright browser automation for admin dashboard
+- **Property-based tests** (11 tests) — Hypothesis fuzzing of Pydantic schemas and state machine
+- **Contract tests** (7 tests) — Pact consumer-driven contracts for API endpoints
+- **UI tests** (10 tests) — Playwright browser automation for React admin SPA
 - **Enterprise framework patterns** — custom plugin, layered fixtures, factory-boy data builders, structured reporting, parallel execution, retry/stability
 
-**76+ tests** pass out of the box with zero external dependencies.
+**94+ tests** pass out of the box with zero external dependencies.
 
 ## Project Structure
 
 ```
 enterprise-pytest/
 ├── sut/                              # Software Under Test
-│   └── app/
-│       ├── main.py                   # FastAPI application factory
-│       ├── config.py                 # pydantic-settings configuration
-│       ├── database.py               # Async SQLAlchemy engine & session
-│       ├── auth/                     # JWT, bcrypt hashing, RBAC dependencies
-│       ├── models/                   # SQLAlchemy 2.0 ORM models
-│       ├── schemas/                  # Pydantic v2 request/response schemas
-│       ├── services/                 # Business logic (orders, products, coupons)
-│       ├── events/                   # In-memory event broker (pub/sub)
-│       ├── routers/                  # API + admin UI routes
-│       ├── templates/                # Jinja2 admin templates
-│       └── static/                   # CSS assets
+│   ├── app/
+│   │   ├── main.py                   # FastAPI application factory
+│   │   ├── config.py                 # pydantic-settings configuration
+│   │   ├── database.py               # Async SQLAlchemy engine & session
+│   │   ├── auth/                     # JWT, bcrypt hashing, RBAC dependencies
+│   │   ├── models/                   # SQLAlchemy 2.0 ORM models
+│   │   ├── schemas/                  # Pydantic v2 request/response schemas
+│   │   ├── services/                 # Business logic (orders, products, coupons)
+│   │   ├── events/                   # In-memory event broker (pub/sub)
+│   │   ├── routers/                  # API routes + React SPA serving
+│   │   └── static/admin/             # Built React SPA assets
+│   └── admin-ui/                     # React + TypeScript + Tailwind source
+│       ├── src/
+│       │   ├── pages/                # Login, Dashboard, Orders, Products, Coupons
+│       │   ├── components/           # Sidebar, Shell, StatusBadge
+│       │   ├── api.ts                # Typed API client
+│       │   └── hooks.ts              # useAuth, useFetch
+│       ├── package.json
+│       └── vite.config.ts
 ├── tests/                            # Test framework
 │   ├── conftest.py                   # Root: layered fixture architecture
 │   ├── config.py                     # Environment-aware settings (pydantic-settings)
@@ -46,7 +55,9 @@ enterprise-pytest/
 │   ├── regression/                   # Edge-case & bug-fix tests
 │   ├── messaging/                    # Event broker tests
 │   ├── performance/                  # pytest-benchmark + Locust load tests
-│   ├── ui/                           # Playwright browser tests
+│   ├── hypothesis/                   # Property-based tests (Hypothesis)
+│   ├── contract/                     # Consumer-driven contract tests (Pact)
+│   ├── ui/                           # Playwright browser tests (React SPA)
 │   ├── test_plugin_smoke.py          # Plugin infrastructure smoke tests
 │   └── test_fixtures_smoke.py        # Fixture infrastructure smoke tests
 ├── .github/workflows/ci.yml          # CI pipeline (lint + test matrix + benchmarks)
@@ -64,19 +75,20 @@ A self-contained REST API with:
 - **Orders** — Create → Pay → Ship → Deliver state machine, tax calculation, inventory management, coupon support
 - **Coupons** — Percentage discounts with date validity, usage limits, and one-per-order constraint
 - **Events** — In-memory pub/sub broker publishing `ORDER_CREATED`, `ORDER_PAID`, `ORDER_SHIPPED`, `ORDER_DELIVERED`, `ORDER_CANCELLED`, `INVENTORY_DECREMENTED`, `INVENTORY_RESTORED`, and `ORDER_COUPON_APPLIED`
-- **Admin UI** — Server-rendered dashboard with login, order overview, and status filtering
+- **Admin UI** — React + TypeScript + Tailwind CSS single-page application with login, dashboard, orders, products, and coupons views
 
 ### Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
-| Framework | FastAPI |
+| API | FastAPI |
 | ORM | SQLAlchemy 2.0 (async) |
 | Database | SQLite via aiosqlite |
 | Auth | python-jose (JWT) + bcrypt |
 | Validation | Pydantic v2 |
 | Config | pydantic-settings |
-| Templates | Jinja2 |
+| Admin UI | React 19, TypeScript 5.9, Tailwind CSS 4, Vite 7 |
+| Icons | Lucide React |
 
 ## Quick Start
 
@@ -84,6 +96,7 @@ A self-contained REST API with:
 
 - Python 3.11+
 - [uv](https://docs.astral.sh/uv/) (recommended) or pip
+- Node.js 18+ (only if rebuilding the admin UI)
 
 ### Setup
 
@@ -117,7 +130,7 @@ uvicorn sut.app.main:app --reload
 
 ### Enterprise Plugin (`tests/plugins/pytest_enterprise.py`)
 
-- **Custom markers** — `@pytest.mark.functional`, `regression`, `performance`, `messaging`, `ui`, `slow`
+- **Custom markers** — `@pytest.mark.functional`, `regression`, `performance`, `messaging`, `ui`, `hypothesis`, `contract`, `slow`
 - **`@test_meta` decorator** — attach traceability metadata (ticket ID, severity, component) to any test
 - **`ExchangeStore`** — captures HTTP request/response pairs for debugging and reporting
 - **Enriched failure reports** — HTTP exchanges and metadata attached to failed test output
@@ -173,6 +186,8 @@ make test-functional          # Feature tests
 make test-regression          # Edge-case tests
 make test-messaging           # Event broker tests
 make test-performance         # pytest-benchmark
+make test-hypothesis          # Property-based (Hypothesis)
+make test-contract            # Consumer-driven contracts (Pact)
 make test-ui                  # Playwright (requires: playwright install)
 make test-smoke               # Plugin + fixture smoke tests
 

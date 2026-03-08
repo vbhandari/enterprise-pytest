@@ -47,6 +47,10 @@ test = [
     # UI testing
     "pytest-playwright>=0.5.0",
     "playwright>=1.44.0",
+    # Property-based testing
+    "hypothesis>=6.100.0",
+    # Contract testing
+    "pact-python>=2.2.0",
 ]
 dev = [
     "ruff>=0.5.0",
@@ -67,6 +71,8 @@ markers = [
     "messaging: Event broker / messaging tests",
     "ui: Playwright UI tests",
     "slow: Tests that take a long time to run",
+    "hypothesis: Property-based / fuzz tests",
+    "contract: Consumer-driven contract tests",
 ]
 addopts = [
     "--strict-markers",

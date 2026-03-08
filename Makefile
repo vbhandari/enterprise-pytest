@@ -1,4 +1,4 @@
-.PHONY: install test test-functional test-regression test-messaging test-performance test-ui lint serve help
+.PHONY: install test test-functional test-regression test-messaging test-performance test-ui test-hypothesis test-contract lint serve help build-ui
 
 help: ## Show this help message
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -42,8 +42,21 @@ test-performance: ## Run performance benchmarks
 test-ui: ## Run Playwright UI tests
 	pytest tests/ui/ -v
 
+test-hypothesis: ## Run property-based tests
+	pytest tests/hypothesis/ -v
+
+test-contract: ## Run Pact contract tests
+	pytest tests/contract/ -v
+
 test-smoke: ## Run smoke tests only
 	pytest tests/test_plugin_smoke.py tests/test_fixtures_smoke.py -v
+
+# ---------------------------------------------------------------------------
+# UI build
+# ---------------------------------------------------------------------------
+
+build-ui: ## Build the React admin UI
+	cd sut/admin-ui && npm run build
 
 # ---------------------------------------------------------------------------
 # Reporting

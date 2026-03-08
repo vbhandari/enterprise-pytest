@@ -1,4 +1,4 @@
-"""Playwright UI tests for the admin dashboard."""
+"""Playwright UI tests for the React admin dashboard."""
 
 from __future__ import annotations
 
@@ -10,39 +10,85 @@ from tests.plugins.pytest_enterprise import test_meta
 pytestmark = [pytest.mark.ui]
 
 
-async def _seed_and_login_admin(live_server: str, page: Page) -> None:
+async def _inject_auth_token(page: Page, live_server: str) -> None:
     """
-    Seed an admin user via the API and log in through the UI.
+    Inject a fake JWT into localStorage so the React SPA considers
+    us authenticated. The actual API calls will fail, but the SPA
+    shell (sidebar, routing) will render.
 
-    Uses the registration endpoint + direct DB manipulation isn't available
-    in UI tests, so we register as customer then rely on a pre-seeded admin.
-    For UI tests, we POST to login directly.
+    For a full integration flow, the live server would need a seeded
+    admin user — here we focus on testing the React UI layer.
     """
-    # Navigate to login and submit credentials
     await page.goto(f"{live_server}/admin/login")
-    await page.fill("#email", "admin@test.com")
-    await page.fill("#password", "AdminPass123!")
-    await page.click("button[type=submit]")
-    # Wait for redirect
-    await page.wait_for_url("**/admin/dashboard", timeout=5000)
+    await page.evaluate('localStorage.setItem("admin_token", "test-token-for-ui")')
+    await page.goto(f"{live_server}/admin/dashboard")
 
 
 class TestDashboard:
-    """Admin dashboard UI tests."""
+    """Admin dashboard UI tests — React SPA."""
 
     @test_meta(ticket="UI-010", severity="normal", component="admin_ui")
-    async def test_dashboard_redirects_unauthenticated(
+    async def test_unauthenticated_sees_login(
         self, live_server: str, page: Page
     ) -> None:
+        """Without a token, the SPA should show the login form."""
         await page.goto(f"{live_server}/admin/dashboard")
-        # Should redirect to login
-        await page.wait_for_url("**/admin/login", timeout=5000)
-        assert "/admin/login" in page.url
+        await page.wait_for_selector("[data-testid=email-input]", timeout=5000)
+        assert await page.locator("[data-testid=email-input]").is_visible()
 
     @test_meta(ticket="UI-011", severity="normal", component="admin_ui")
-    async def test_logout_redirects_to_login(
+    async def test_authenticated_sees_dashboard(
         self, live_server: str, page: Page
     ) -> None:
-        await page.goto(f"{live_server}/admin/logout")
-        await page.wait_for_url("**/admin/login", timeout=5000)
-        assert "/admin/login" in page.url
+        """With a token, the SPA should render the dashboard heading."""
+        await _inject_auth_token(page, live_server)
+        heading = page.locator("[data-testid=dashboard-heading]")
+        await heading.wait_for(state="visible", timeout=5000)
+        assert "Dashboard" in (await heading.text_content() or "")
+
+    @test_meta(ticket="UI-012", severity="normal", component="admin_ui")
+    async def test_sidebar_navigation_links(
+        self, live_server: str, page: Page
+    ) -> None:
+        """Sidebar should contain navigation links for all sections."""
+        await _inject_auth_token(page, live_server)
+        sidebar = page.locator("aside")
+        await sidebar.wait_for(state="visible", timeout=5000)
+
+        for label in ["Dashboard", "Orders", "Products", "Coupons"]:
+            link = sidebar.locator(f"text={label}")
+            assert await link.is_visible(), f"Sidebar link '{label}' not visible"
+
+    @test_meta(ticket="UI-013", severity="normal", component="admin_ui")
+    async def test_logout_clears_token(
+        self, live_server: str, page: Page
+    ) -> None:
+        """Clicking sign out should clear the token and show login."""
+        await _inject_auth_token(page, live_server)
+        await page.click("[data-testid=logout-btn]")
+        # After logout, login form should appear
+        await page.wait_for_selector("[data-testid=email-input]", timeout=5000)
+        assert await page.locator("[data-testid=email-input]").is_visible()
+        # Token should be cleared
+        token = await page.evaluate('localStorage.getItem("admin_token")')
+        assert token is None
+
+    @test_meta(ticket="UI-014", severity="normal", component="admin_ui")
+    async def test_navigate_to_orders_page(
+        self, live_server: str, page: Page
+    ) -> None:
+        """Clicking Orders in sidebar should navigate to the orders page."""
+        await _inject_auth_token(page, live_server)
+        await page.click("aside >> text=Orders")
+        await page.wait_for_selector("[data-testid=status-filters]", timeout=5000)
+        assert "/orders" in page.url
+
+    @test_meta(ticket="UI-015", severity="normal", component="admin_ui")
+    async def test_navigate_to_products_page(
+        self, live_server: str, page: Page
+    ) -> None:
+        """Clicking Products in sidebar should navigate to the products page."""
+        await _inject_auth_token(page, live_server)
+        await page.click("aside >> text=Products")
+        await page.wait_for_url("**/products", timeout=5000)
+        assert "/products" in page.url

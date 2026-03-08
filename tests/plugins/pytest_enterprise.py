@@ -39,6 +39,8 @@ MARKERS: dict[str, str] = {
     "messaging": "Event broker / messaging tests",
     "ui": "Playwright UI tests",
     "slow": "Tests that take a long time to run",
+    "hypothesis": "Property-based / fuzz tests",
+    "contract": "Consumer-driven contract tests",
     "test_meta": "Enterprise test metadata (ticket, severity, component)",
 }
 
