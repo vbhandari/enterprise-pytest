@@ -1,6 +1,6 @@
 import type { AuthResponse, Coupon, HealthResponse, Order, OrderSummary, Product } from './types'
 
-const API_BASE = import.meta.env.DEV ? '' : '/api'
+const API_BASE = ''
 
 function authHeaders(): Record<string, string> {
   const token = localStorage.getItem('admin_token')
